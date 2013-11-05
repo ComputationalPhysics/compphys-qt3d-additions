@@ -1,4 +1,5 @@
 FlyModeNavigator
 =============
 
-A set of examples that implement some nice additions to Qt3D.
+QML implementation of a flymode navigator for the Qt3D viewport.
+

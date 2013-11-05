@@ -1,7 +1,7 @@
 QT += 3dquick
 
 # Add more folders to ship with the application, here
-folder_01.source = qml/viewportnavigator
+folder_01.source = qml/flymodenavigator
 folder_01.target = qml
 DEPLOYMENTFOLDERS = folder_01
 
