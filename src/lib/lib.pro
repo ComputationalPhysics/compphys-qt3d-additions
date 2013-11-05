@@ -5,7 +5,12 @@ CONFIG += plugin
 TARGET=flymodenavigator
 
 DESTDIR = $$OUT_PWD/FlyModeNavigator
-QMAKE_POST_LINK += $$QMAKE_COPY $$PWD/qmldir $$PWD/FlyModeNavigator.qml $$DESTDIR;
+
+copyqml.commands = $$QMAKE_COPY $$PWD/qmldir $$PWD/FlyModeNavigator.qml $$DESTDIR;
+first.depends = $(first) copyqml
+export(first.depends)
+export(copyqml.commands)
+QMAKE_EXTRA_TARGETS += first copyqml
 
 QT += 3dquick quick
 

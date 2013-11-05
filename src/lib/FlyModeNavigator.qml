@@ -4,6 +4,8 @@ import FlyModeNavigator 1.0
 
 Item {
     id: navigatorRoot
+    signal pressed(var mouse)
+    signal released(var mouse)
     property real mouseSensitivity: 0.03
     property real moveSpeed: 0.03
     property real moveAcceleration: 0.1
@@ -11,7 +13,6 @@ Item {
     property real _realMoveSpeed: moveSpeed * (_hyperSpeed ? 4.0 : 1.0)
     property bool _hasReportedMissingCamera: false
     property Camera camera: null
-    focus: true
     anchors.fill: parent
 
     function _printMissingCameraMessage() {
@@ -31,6 +32,7 @@ Item {
         property bool _firstMove: true
         property bool _secondMove: false
         anchors.fill: parent
+        hoverEnabled: navigatorRoot.activeFocus
         function mouseMoved(mouse) {
             if(_ignoreMouseMoverMove) {
                 return;
@@ -65,12 +67,17 @@ Item {
             mouseMoved(mouse)
         }
         onPressed: {
+            navigatorRoot.forceActiveFocus()
+            navigatorRoot.pressed(mouse)
             _firstMove = true;
             _ignoreMouseMoverMove = true;
             mouseMover.move(navigatorRoot.width / 2, navigatorRoot.height / 2);
             mouseMover.showCursor = false
             _ignoreMouseMoverMove = false;
-            hoverEnabled = true
+//            hoverEnabled = true
+        }
+        onReleased: {
+            navigatorRoot.released(mouse)
         }
     }
     Keys.onPressed: {
@@ -81,7 +88,7 @@ Item {
         }
 
         if(event.key === Qt.Key_Escape) {
-            mouseArea.hoverEnabled = false
+            navigatorRoot.focus = false
             mouseMover.showCursor = true
         }
 

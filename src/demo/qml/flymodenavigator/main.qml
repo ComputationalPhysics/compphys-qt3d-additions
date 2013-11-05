@@ -12,29 +12,39 @@ Rectangle {
         anchors.fill: parent
         navigation: false
         Sphere {
+            radius: 0.2
+            x: -0.1
+            y: 0.3
             effect: Effect {
                 color: "red"
             }
         }
         Sphere {
-            x: 1
-            y: 1
-            effect: Effect {
-                color: "red"
-            }
-        }
-        Sphere {
+            radius: 0.5
+            x: 0.5
+            y: -0.7
             z: 1
             effect: Effect {
                 color: "red"
             }
         }
-        FlyModeNavigator {
-            focus: true
-            camera: viewportRoot.camera
+        Sphere {
+            radius: 0.6
+            z: -0.8
+            effect: Effect {
+                color: "yellow"
+            }
+        }
+        Sphere {
+            radius: 0.5
+            z: 0.1
+            y: -1
+            effect: Effect {
+                color: "green"
+            }
         }
     }
-    MouseMover {
-
+    FlyModeNavigator {
+        camera: viewportRoot.camera
     }
 }
