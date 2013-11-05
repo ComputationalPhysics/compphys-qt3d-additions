@@ -6,12 +6,16 @@ Item {
     id: navigatorRoot
     signal pressed(var mouse)
     signal released(var mouse)
+    property bool activateOnPressed: true
     property real mouseSensitivity: 0.03
     property real moveSpeed: 0.03
     property real moveAcceleration: 0.1
     property bool _hyperSpeed: false
     property real _realMoveSpeed: moveSpeed * (_hyperSpeed ? 4.0 : 1.0)
     property bool _hasReportedMissingCamera: false
+    property bool _ignoreMouseMoverMove: false
+    property bool _firstMove: true
+    property bool _secondMove: false
     property Camera camera: null
     anchors.fill: parent
 
@@ -22,18 +26,33 @@ Item {
         _hasReportedMissingCamera = true;
     }
 
+    function activate() {
+        navigatorRoot.forceActiveFocus()
+        _firstMove = true;
+        _ignoreMouseMoverMove = true;
+        mouseMover.move(navigatorRoot.width / 2, navigatorRoot.height / 2);
+        mouseMover.showCursor = false
+        _ignoreMouseMoverMove = false;
+    }
+
+    function deactivate() {
+        navigatorRoot.focus = false
+        mouseMover.showCursor = true
+    }
+
     MouseMover {
         id: mouseMover
     }
 
     MouseArea {
         id: mouseArea
-        property bool _ignoreMouseMoverMove: false
-        property bool _firstMove: true
-        property bool _secondMove: false
         anchors.fill: parent
         hoverEnabled: navigatorRoot.activeFocus
         function mouseMoved(mouse) {
+            if(!navigatorRoot.activeFocus) {
+                return;
+            }
+
             if(_ignoreMouseMoverMove) {
                 return;
             }
@@ -67,14 +86,10 @@ Item {
             mouseMoved(mouse)
         }
         onPressed: {
-            navigatorRoot.forceActiveFocus()
+            if(activateOnPressed) {
+                navigatorRoot.activate()
+            }
             navigatorRoot.pressed(mouse)
-            _firstMove = true;
-            _ignoreMouseMoverMove = true;
-            mouseMover.move(navigatorRoot.width / 2, navigatorRoot.height / 2);
-            mouseMover.showCursor = false
-            _ignoreMouseMoverMove = false;
-//            hoverEnabled = true
         }
         onReleased: {
             navigatorRoot.released(mouse)
@@ -86,12 +101,9 @@ Item {
         } else {
             _hyperSpeed = false
         }
-
         if(event.key === Qt.Key_Escape) {
-            navigatorRoot.focus = false
-            mouseMover.showCursor = true
+            deactivate()
         }
-
         if(!event.isAutoRepeat) {
             if(event.key === Qt.Key_W) {
                 moveTimer.forward = true
