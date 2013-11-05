@@ -1,2 +1,2 @@
 module StereoViewport
-plugin stereoviewport
+plugin StereoViewport
