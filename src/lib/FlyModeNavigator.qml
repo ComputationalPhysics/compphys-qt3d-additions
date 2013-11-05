@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Qt3D 2.0
+import FlyModeNavigator 1.0
 
 Item {
     id: navigatorRoot
@@ -18,6 +19,10 @@ Item {
             console.log("Navigator's camera property is missing. Please set the camera before interacting with the navigator.");
         }
         _hasReportedMissingCamera = true;
+    }
+
+    MouseMover {
+        id: mouseMover
     }
 
     MouseArea {

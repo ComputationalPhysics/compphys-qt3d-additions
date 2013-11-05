@@ -1,14 +1,14 @@
 #ifndef MOUSEMOVER_H
 #define MOUSEMOVER_H
 
-#include <QQuickView>
+#include <QWindow>
 
 class MouseMover : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool showCursor READ showCursor WRITE setShowCursor NOTIFY showCursorChanged)
 public:
-    explicit MouseMover(QQuickView *parent = 0);
+    explicit MouseMover(QObject *parent = 0);
     virtual ~MouseMover();
 
     bool showCursor() const;
@@ -23,8 +23,10 @@ public slots:
     void setShowCursor(bool arg);
 
 private:
-    QQuickView* m_view;
+    QWindow* m_rootWindow;
     bool m_showCursor;
+    bool m_hasWarnedAboutRootWindow;
+    void setupRootWindow();
 };
 
 #endif // MOUSEMOVER_H

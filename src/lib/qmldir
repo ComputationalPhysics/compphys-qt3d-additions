@@ -1,0 +1,3 @@
+module FlyModeNavigator
+FlyModeNavigator 1.0 FlyModeNavigator.qml
+plugin flymodenavigator
