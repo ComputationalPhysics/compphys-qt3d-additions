@@ -23,6 +23,9 @@ SOURCES += main.cpp
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
+# Added for code completion in Qt Creator
+QML_IMPORT_PATH = $$OUT_PWD/../libs/
+
 OTHER_FILES +=
 
 TARGET = flymodenavigator-demo

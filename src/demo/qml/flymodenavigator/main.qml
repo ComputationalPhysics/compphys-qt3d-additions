@@ -44,6 +44,10 @@ Rectangle {
             }
         }
     }
+    MouseMover {
+
+    }
+
     FlyModeNavigator {
         camera: viewportRoot.camera
     }
