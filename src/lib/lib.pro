@@ -15,3 +15,9 @@ SOURCES += \
     qglmaskedsurface.cpp \
     qgldrawbuffersurface.cpp \
     stereoviewportmodule.cpp
+
+OTHER_FILES += \
+    qmldir
+
+DESTDIR = $$OUT_PWD/StereoViewport
+QMAKE_POST_LINK += $$QMAKE_COPY $$PWD/qmldir $$DESTDIR/qmldir;

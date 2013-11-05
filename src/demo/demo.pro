@@ -13,9 +13,6 @@ QML_IMPORT_PATH =
 
 TARGET=stereoviewport-demo
 
-INCLUDEPATH += ../lib
-LIBS += -L../lib -lstereoviewport
-
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp
 
