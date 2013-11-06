@@ -22,3 +22,13 @@ SOURCES += main.cpp
 # Please do not modify the following two lines. Required for deployment.
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
+
+macx {
+    LIBS_TARGET_DIR = $$OUT_PWD/$${TARGET}.app/Contents/Resources/
+
+    copydata.commands = echo Balle && $(COPY_DIR) $$OUT_PWD/../libs/StereoViewport $$LIBS_TARGET_DIR
+    first.depends = $(first) copydeploymentfolders copydata
+    export(first.depends)
+    export(copydata.commands)
+    QMAKE_EXTRA_TARGETS += first copydata
+}
