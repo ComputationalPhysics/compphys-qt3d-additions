@@ -29,3 +29,13 @@ QML_IMPORT_PATH = $$OUT_PWD/../libs/
 OTHER_FILES +=
 
 TARGET = flymodenavigator-demo
+
+macx {
+    LIBS_TARGET_DIR = $$OUT_PWD/$${TARGET}.app/Contents/Resources/
+
+    copydata.commands = echo Balle && $(COPY_DIR) $$OUT_PWD/../libs/StereoViewport $$LIBS_TARGET_DIR
+    first.depends = $(first) copydeploymentfolders copydata
+    export(first.depends)
+    export(copydata.commands)
+    QMAKE_EXTRA_TARGETS += first copydata
+}
