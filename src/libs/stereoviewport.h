@@ -205,8 +205,6 @@ private:
     void pan(float deltax, float deltay);
     void rotate(float deltax, float deltay);
     QPointF viewDelta(float deltax, float deltay);
-
-    static const int FBO_SIZE;
 };
 
 QT_END_NAMESPACE

@@ -274,7 +274,7 @@ class StereoViewportSubsurface : public QGLSubsurface
 {
 public:
     StereoViewportSubsurface(QGLAbstractSurface *surface, const QRect &region,
-                      float adjust)
+                             float adjust)
         : QGLSubsurface(surface, region), m_adjust(adjust) {}
 
     float aspectRatio() const;
@@ -512,8 +512,6 @@ QGLAbstractSurface *StereoViewportPrivate::rightEyeSurface(const QRect &original
     }
     return rightSurface;
 }
-
-const int StereoViewport::FBO_SIZE = 8;
 
 /*!
     \internal
@@ -1039,12 +1037,14 @@ void StereoViewport::render(QGLPainter *painter)
     // boundingRect is in local coordinates. We need to map it to the scene coordinates
     // in order to render to correct area.
     QRect originalViewport = mapRectToScene(boundingRect()).toRect();
-    // TODO
-    // Deal with transforms on the object, which change the viewport?
+    // In BufferedRender mode we don't need to shift left upper corner of our rect,
+    // because we render to separate render target.
+    QRect target_rect( (renderMode() == DirectRender)? originalViewport.x():0,
+                       (renderMode() == DirectRender)? originalViewport.y():0,
+                       originalViewport.width(),
+                       originalViewport.height() );
 
-    // Disable the effect to return control to the GL paint engine.
-    painter->disableEffect();
-    QGLSubsurface mainSurface (painter->currentSurface(), originalViewport);
+    QGLSubsurface mainSurface (painter->currentSurface(), target_rect);
     if (d->showPicking &&
             d->stereoType == StereoViewport::RedCyanAnaglyph) {
         // If showing picking, then render normally.  This really
@@ -1061,13 +1061,8 @@ void StereoViewport::render(QGLPainter *painter)
         glDisable(GL_CULL_FACE);
         painter->setPicking(false);
     } else if (d->camera->eyeSeparation() == 0.0f) {
-//               && (mainSurface = d->bothEyesSurface()) != 0) {
         // No camera separation, so render the same image into both buffers.
         painter->setEye(QGL::NoEye);
-//        QRect target_rect( (renderMode() == DirectRender)? viewport.x():0,
-//                           (renderMode() == DirectRender)? viewport.y():0,
-//                           viewport.width(),
-//                           viewport.height() );
         painter->pushSurface(&mainSurface);
         // Perform early drawing operations.
         earlyDraw(painter);
@@ -1095,16 +1090,17 @@ void StereoViewport::render(QGLPainter *painter)
             // May've been set by early draw
             glDisable(GL_CULL_FACE);
         }
-        painter->pushSurface(d->leftEyeSurface(originalViewport, &mainSurface));
+        painter->pushSurface(d->leftEyeSurface(target_rect, &mainSurface));
         if (d->stereoType == StereoViewport::Hardware) {
             earlyDraw(painter);     // Clear the left eye only.
             // May've been set by early draw
             glDisable(GL_CULL_FACE);
         }
         earlyDraw(painter);
+        // Draw the Item3D children.
+        painter->setPicking(d->showPicking);
         // May've been set by early draw
         glDisable(GL_CULL_FACE);
-
         if (d->camera) {
             painter->setCamera(d->camera);
         } else {
@@ -1118,7 +1114,7 @@ void StereoViewport::render(QGLPainter *painter)
             glClear(GL_DEPTH_BUFFER_BIT);
         }
         painter->setEye(QGL::RightEye);
-        painter->setSurface(d->rightEyeSurface(originalViewport, &mainSurface));
+        painter->setSurface(d->rightEyeSurface(target_rect, &mainSurface));
         if (d->stereoType == StereoViewport::Hardware) {
             earlyDraw(painter);     // Clear the right eye only.
             // May've been set by the early draw
@@ -1136,6 +1132,9 @@ void StereoViewport::render(QGLPainter *painter)
         painter->setPicking(false);
         painter->popSurface();
     }
+
+    // Disable the effect to return control to the GL paint engine.
+    painter->disableEffect();
 }
 
 /*!
@@ -1305,53 +1304,7 @@ void StereoViewport::setupPickPaint(QGLPainter *painter, const QPointF &pt)
     } else {
         cam.reset(new QGLCamera);
     }
-
-    float vw = cam->viewSize().width();
-    float vh = cam->viewSize().height();
-    float asp = 1.0f;
-    if (cam->adjustForAspectRatio())
-    {
-        // see QGLCamera::projectionMatrix for this logic
-        asp = width() / height();
-        if (asp > 1.0f)
-            vw *= asp;
-        else
-            vh /= asp;
-    }
-
-    // make sure that our viewport has the same aspect ratio as our
-    // camera viewsize
-    Q_ASSERT(qFuzzyCompare((vw / width()), (vh / height())));
-
-    // shrink the camera view size down to the size of the FBO relative
-    // to the viewports near plane size - note that the vw / width() and
-    // vh / height() should evaluate to the same thing.
-    cam->setAdjustForAspectRatio(false);
-
-    // map the pick to coordinate system with origin at center of viewport
-    float dx = pt.x() - (width() / 2.0f);
-    float dy = pt.y() - (height() / 2.0f);
-    dy = -dy;  // near plane coord system is correct, opengl style, not upside down like qt
-    dx *= vw / width();
-    dy *= vh / height();
-    float dim = qMin(width(), height());
-    Q_ASSERT(cam->viewSize().width() == cam->viewSize().height());  // viewsize is square
-
     painter->setCamera(cam.data());
-
-    QVector3D sideVec = QVector3D::crossProduct(cam->center() - cam->eye(), cam->upVector());
-    sideVec.normalize();
-    sideVec *= -dx;
-    QVector3D upVec = cam->upVector() * -dy;
-    QVector3D tx = sideVec + upVec;
-    QMatrix4x4 m;
-    m.translate(tx);
-
-    QMatrix4x4 s;
-    float fac = dim / float(FBO_SIZE);
-    s.scale(QVector3D(fac, fac, 0.0f));
-
-    painter->projectionMatrix() = s * m * painter->projectionMatrix().top();
 }
 
 /*!
@@ -1370,7 +1323,6 @@ void StereoViewport::setupPickPaint(QGLPainter *painter, const QPointF &pt)
 */
 void StereoViewport::objectForPoint()
 {
-    QSize fbosize(QSize(FBO_SIZE, FBO_SIZE));
     PickEvent *p = 0;
     while (true)
     {
@@ -1385,6 +1337,50 @@ void StereoViewport::objectForPoint()
             break;
 
         QPointF pt = p->event()->pos();
+//        pt.setX(pt.x()-x());
+//        pt.setY(pt.y()-y());
+        QSize areaSize = boundingRect().size().toSize();
+        if(d->camera && d->camera->eyeSeparation() != 0.0f) {
+            // What is the size of the drawing area after correcting for stereo?
+            // Also adjust the mouse position to always be in the left half.
+            switch (d->stereoType) {
+            case QGLView::LeftRight:
+            case QGLView::RightLeft:
+                areaSize = QSize(areaSize.width() / 2, areaSize.height());
+                if (pt.x() >= areaSize.width())
+                    pt.setX(pt.x() - areaSize.width());
+                break;
+            case QGLView::TopBottom:
+            case QGLView::BottomTop:
+                areaSize = QSize(areaSize.width(), areaSize.height() / 2);
+                if (pt.y() >= areaSize.height())
+                    pt.setY(pt.y() - areaSize.height());
+                break;
+            case QGLView::StretchedLeftRight:
+            case QGLView::StretchedRightLeft: {
+                int halfwid = areaSize.width() / 2;
+                if (pt.x() >= halfwid)
+                    pt.setX((pt.x() - halfwid) * 2);
+                else
+                    pt.setX(pt.x() * 2);
+                break; }
+            case QGLView::StretchedTopBottom:
+            case QGLView::StretchedBottomTop: {
+                int halfht = areaSize.height() / 2;
+                if (pt.y() >= halfht)
+                    pt.setY((pt.y() - halfht) * 2);
+                else
+                    pt.setY(pt.y() * 2);
+                break; }
+            default: break;
+            }
+        }
+
+        // It is faster to render textures with sizes that are powers of two.
+        // The fbosize could be set as QSize fbosize = QGL::nextPowerOfTwo(areaSize);
+        // but this does not allow for pixel-perfect selection.
+        QSize fbosize = areaSize;
+
         // Check the viewport boundaries in case a mouse move has
         // moved the pointer outside the window.
         QRectF rect = boundingRect();
@@ -1397,6 +1393,9 @@ void StereoViewport::objectForPoint()
         {
             d->pickFbo = new QOpenGLFramebufferObject(fbosize,
                                                       QOpenGLFramebufferObject::CombinedDepthStencil);
+        } else if (d->pickFbo->size() != fbosize) {
+            delete d->pickFbo;
+            d->pickFbo = new QOpenGLFramebufferObject(fbosize, QOpenGLFramebufferObject::CombinedDepthStencil);
         }
         int objectId = -1;
         QScopedPointer<QGLAbstractSurface> fboSurf(new QGLFramebufferObjectSurface(d->pickFbo));
@@ -1404,12 +1403,14 @@ void StereoViewport::objectForPoint()
             QGLPainter painter;
             if (painter.begin(fboSurf.data()))
             {
-                int winToFboRatioW = width() / FBO_SIZE;
-                int winToFboRatioH = height() / FBO_SIZE;
                 setupPickPaint(&painter, pt);
                 draw(&painter);
                 painter.setPicking(false);
-                objectId = painter.pickObject(pt.x() / winToFboRatioW, pt.y() / winToFboRatioH);
+                // The following two lines are not needed unless we set a different fbosize
+//                double areaToFboRatioW = double(fbosize.width()) / double(areaSize.width());
+//                double areaToFboRatioH = double(fbosize.height()) / double(areaSize.height());
+//                objectId = painter.pickObject(pt.x() * areaToFboRatioW, fbosize.height() - 1 - pt.y() * areaToFboRatioH);
+                objectId = painter.pickObject(pt.x(), fbosize.height() - 1 - pt.y());
                 d->setDefaults(&painter);
             } else {
                 qWarning() << "Warning: unable to paint into fbo, picking will be unavailable";

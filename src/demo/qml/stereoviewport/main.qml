@@ -12,6 +12,8 @@ Rectangle {
         fillColor: "black"
         anchors.fill: parent
         stereoType: StereoViewport.RightLeft
+        picking: true
+        fovzoom: false
 
         light: Light {
             position: Qt.vector3d(2.0, 1.0, 3.0)
@@ -25,12 +27,18 @@ Rectangle {
             effect: Effect {
                 color: "yellow"
             }
+            onClicked: {
+                x += 0.1
+            }
         }
 
         Cube {
             x: 1.5
             effect: Effect {
                 color: "yellow"
+            }
+            onClicked: {
+                x += 0.1
             }
         }
 
@@ -39,6 +47,9 @@ Rectangle {
             effect: Effect {
                 color: "yellow"
             }
+            onClicked: {
+                x += 0.1
+            }
         }
 
         Cube {
@@ -46,12 +57,19 @@ Rectangle {
             effect: Effect {
                 color: "yellow"
             }
+            onClicked: {
+                x += 0.1
+            }
+
         }
 
         Cube {
             x: -4
             effect: Effect {
                 color: "yellow"
+            }
+            onClicked: {
+                x += 0.1
             }
         }
 
@@ -60,6 +78,9 @@ Rectangle {
             effect: Effect {
                 color: "yellow"
             }
+            onClicked: {
+                x += 0.1
+            }
         }
 
         Cube {
@@ -67,12 +88,18 @@ Rectangle {
             effect: Effect {
                 color: "yellow"
             }
+            onClicked: {
+                x += 0.1
+            }
         }
 
         Cube {
             z: -1.5
             effect: Effect {
                 color: "yellow"
+            }
+            onClicked: {
+                x += 0.1
             }
         }
     }
