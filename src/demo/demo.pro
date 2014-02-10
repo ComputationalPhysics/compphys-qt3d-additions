@@ -33,7 +33,7 @@ TARGET = flymodenavigator_demo
 macx {
     LIBS_TARGET_DIR = $$OUT_PWD/$${TARGET}.app/Contents/Resources/
 
-    copydata.commands = $(COPY_DIR) $$OUT_PWD/../libs/StereoViewport $$LIBS_TARGET_DIR
+    copydata.commands = $(COPY_DIR) $$PWD/qml $$OUT_PWD/../libs/FlyModeNavigator $$LIBS_TARGET_DIR
     first.depends = $(first) copydeploymentfolders copydata
     export(first.depends)
     export(copydata.commands)
