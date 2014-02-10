@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import Qt3D 2.0
-import FlyModeNavigator 1.0
+import CompPhys.FlyModeNavigator 1.0
 
 Item {
     id: navigatorRoot

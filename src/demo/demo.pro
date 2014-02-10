@@ -17,7 +17,7 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp
 
 # Installation path
-# target.path =
+target.path = $$[QT_INSTALL_EXAMPLES]/compphys
 
 # Please do not modify the following two lines. Required for deployment.
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
@@ -28,12 +28,12 @@ QML_IMPORT_PATH = $$OUT_PWD/../libs/
 
 OTHER_FILES +=
 
-TARGET = flymodenavigator-demo
+TARGET = flymodenavigator_demo
 
 macx {
     LIBS_TARGET_DIR = $$OUT_PWD/$${TARGET}.app/Contents/Resources/
 
-    copydata.commands = echo Balle && $(COPY_DIR) $$OUT_PWD/../libs/StereoViewport $$LIBS_TARGET_DIR
+    copydata.commands = $(COPY_DIR) $$OUT_PWD/../libs/StereoViewport $$LIBS_TARGET_DIR
     first.depends = $(first) copydeploymentfolders copydata
     export(first.depends)
     export(copydata.commands)
