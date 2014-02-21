@@ -8,7 +8,8 @@ Item {
     signal released(var mouse)
     property bool activateOnPressed: true
     property real mouseSensitivity: 0.03
-    property real moveSpeed: 0.03
+    property real moveSpeed: 3.0
+    property real hyperSpeedFactor: 4.0
     property real moveAcceleration: 0.1
     property bool _hyperSpeed: false
     property real _realMoveSpeed: moveSpeed * (_hyperSpeed ? 4.0 : 1.0)
@@ -146,56 +147,56 @@ Item {
         property bool right: false
         property real forwardSpeed: 0.0
         property real rightSpeed: 0.0
+        property real lastTime: 0
         running: true
         repeat: true
         interval: 16
 
         onTriggered: {
+            var currentTime = Date.now();
+            var timeDifference = currentTime-lastTime;
+            timeDifference /= 1000.0;
+            lastTime = currentTime;
+            if(timeDifference > 1.0) {
+                return;
+            }
+
             if(!camera) {
                 _printMissingCameraMessage();
                 return;
             }
 
             var forwardVector = camera.center.minus(camera.eye);
+            forwardVector = forwardVector.normalized();
             var upVector = camera.upVector
+            upVector = upVector.normalized();
             var a = forwardVector;
             var b = upVector;
             var rightVector = Qt.vector3d(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); // cross product, a x b
+            rightVector = rightVector.normalized();
             var translation = Qt.vector3d(0,0,0);
 
-            // Set up speeds
-            var acceleration = moveAcceleration * interval / 1000;
-            var deceleration = moveAcceleration * interval / 1000 * 2;
+            var speed = moveSpeed;
+            if(_hyperSpeed) {
+                speed *= hyperSpeedFactor;
+            }
 
             // Decide what to do based on velocity
             if(forward) {
-                forwardSpeed += acceleration;
+                forwardSpeed = speed*timeDifference;
             } else if(backward) {
-                forwardSpeed -= acceleration;
+                forwardSpeed = -speed*timeDifference;
             } else {
-                if(forwardSpeed > 0) {
-                    forwardSpeed = Math.max(forwardSpeed - deceleration, 0);
-                } else {
-                    forwardSpeed = Math.min(forwardSpeed + deceleration, 0);
-                }
-            }
-            if(right) {
-                rightSpeed += acceleration
-            } else if(left) {
-                rightSpeed -= acceleration
-            } else {
-                if(rightSpeed > 0) {
-                    rightSpeed = Math.max(rightSpeed - deceleration, 0);
-                } else {
-                    rightSpeed = Math.min(rightSpeed + deceleration, 0);
-                }
+                forwardSpeed = 0;
             }
 
-            // Clamp the velocity
-            forwardSpeed = Math.min(forwardSpeed, _realMoveSpeed)
-            forwardSpeed = Math.max(forwardSpeed, -_realMoveSpeed)
-            rightSpeed = Math.min(rightSpeed, _realMoveSpeed / 2)
-            rightSpeed = Math.max(rightSpeed, -_realMoveSpeed / 2)
+            if(right) {
+                rightSpeed = speed*timeDifference;
+            } else if(left) {
+                rightSpeed = -speed*timeDifference;
+            } else {
+                rightSpeed = 0;
+            }
 
             translation = translation.plus(forwardVector.times(forwardSpeed))
             translation = translation.plus(rightVector.times(rightSpeed))
