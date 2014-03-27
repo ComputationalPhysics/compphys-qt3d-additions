@@ -1,0 +1,3 @@
+module CompPhys.FlyModeNavigator
+FlyModeNavigator 1.0 FlyModeNavigator.qml
+plugin FlyModeNavigator
