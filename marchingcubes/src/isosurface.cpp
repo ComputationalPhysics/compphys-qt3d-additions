@@ -65,13 +65,12 @@ void IsoSurface::generateFromScalarField(QArray<QArray<QArray<T> > > &scalarFiel
     reset();
 
     MarchingCubes<T> marchingCubes;
-    qDebug() << "Balle1";
     marchingCubes.GenerateSurface(scalarField, isoValue, gridUnitLength);
-    qDebug() << "Balle2";
+
     for(int triangle=0; triangle<marchingCubes.m_nTriangles; triangle++) {
-        unsigned int p1_index = marchingCubes.m_piTriangleIndices[3*triangle+0];
-        unsigned int p2_index = marchingCubes.m_piTriangleIndices[3*triangle+1];
-        unsigned int p3_index = marchingCubes.m_piTriangleIndices[3*triangle+2];
+        unsigned int p1_index = marchingCubes.m_piTriangleIndices[triangle][0];
+        unsigned int p2_index = marchingCubes.m_piTriangleIndices[triangle][1];
+        unsigned int p3_index = marchingCubes.m_piTriangleIndices[triangle][2];
 
         QVector3D &p1 = marchingCubes.m_ppt3dVertices[p1_index];
         QVector3D &p2 = marchingCubes.m_ppt3dVertices[p2_index];
@@ -88,7 +87,6 @@ void IsoSurface::generateFromScalarField(QArray<QArray<QArray<T> > > &scalarFiel
         m_normals.append(n2);
         m_normals.append(n3);
     }
-    qDebug() << "Balle3";
 
     m_vertexBundleDirty = true;
 }

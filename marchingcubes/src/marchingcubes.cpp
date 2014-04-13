@@ -316,7 +316,6 @@ template <class T> MarchingCubes<T>::MarchingCubes()
     m_nTriangles = 0;
     m_nNormals = 0;
     m_nVertices = 0;
-    m_piTriangleIndices = NULL;
     m_isoValue = 0;
     m_bValidSurface = false;
 }
@@ -467,25 +466,10 @@ template <class T> void MarchingCubes<T>::DeleteSurface()
     m_nVertices = 0;
     m_ppt3dVertices.clear();
 
-    if (m_piTriangleIndices != NULL) {
-        delete[] m_piTriangleIndices;
-        m_piTriangleIndices = NULL;
-    }
+    m_piTriangleIndices.clear();
     m_pvec3dNormals.clear();
     m_isoValue = 0;
     m_bValidSurface = false;
-}
-
-template <class T> int MarchingCubes<T>::GetVolumeLengths(float& fVolLengthX, float& fVolLengthY, float& fVolLengthZ)
-{
-    if (IsSurfaceValid()) {
-        fVolLengthX = m_fCellLengthX*m_nCellsX;
-        fVolLengthY = m_fCellLengthY*m_nCellsY;
-        fVolLengthZ = m_fCellLengthZ*m_nCellsZ;
-        return 1;
-    }
-    else
-        return -1;
 }
 
 template <class T> unsigned int MarchingCubes<T>::GetEdgeID(unsigned int nX, unsigned int nY, unsigned int nZ, unsigned int nEdgeNo)
@@ -659,11 +643,11 @@ template <class T> void MarchingCubes<T>::RenameVerticesAndTriangles()
     // Copy vertex indices which make triangles.
     vecIterator = m_trivecTriangles.begin();
     m_nTriangles = m_trivecTriangles.size();
-    m_piTriangleIndices = new unsigned int[m_nTriangles*3];
+    m_piTriangleIndices.resize(m_nTriangles);
     for (unsigned int i = 0; i < m_nTriangles; i++, vecIterator++) {
-        m_piTriangleIndices[i*3] = (*vecIterator).pointID[0];
-        m_piTriangleIndices[i*3+1] = (*vecIterator).pointID[1];
-        m_piTriangleIndices[i*3+2] = (*vecIterator).pointID[2];
+        m_piTriangleIndices[i][0] = (*vecIterator).pointID[0];
+        m_piTriangleIndices[i][1] = (*vecIterator).pointID[1];
+        m_piTriangleIndices[i][2] = (*vecIterator).pointID[2];
     }
 
     m_i2pt3idVertices.clear();
@@ -687,9 +671,9 @@ template <class T> void MarchingCubes<T>::CalculateNormals()
         QVector3D vec1, vec2;
 
         unsigned int id0, id1, id2;
-        id0 = m_piTriangleIndices[i*3];
-        id1 = m_piTriangleIndices[i*3+1];
-        id2 = m_piTriangleIndices[i*3+2];
+        id0 = m_piTriangleIndices[i][0];
+        id1 = m_piTriangleIndices[i][1];
+        id2 = m_piTriangleIndices[i][2];
 
         vec1.setX(m_ppt3dVertices[id1].x() - m_ppt3dVertices[id0].x());
         vec1.setY(m_ppt3dVertices[id1].y() - m_ppt3dVertices[id0].y());

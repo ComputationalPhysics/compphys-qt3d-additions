@@ -13,6 +13,7 @@
 
 #include <map>
 #include <vector>
+#include <array>
 #include <QArray>
 #include <QVector3D>
 
@@ -34,8 +35,7 @@ public:
     MarchingCubes();
     ~MarchingCubes();
 
-    // Generates the isosurface from the scalar field contained in the
-    // buffer ptScalarField[].
+    // Generates the isosurface from the scalar field contained in scalarField array
     void GenerateSurface(const QArray<QArray<QArray<T> > > &scalarField, T isoValue, QVector3D gridUnitLength);
 
     // Returns true if a valid surface has been generated.
@@ -43,11 +43,6 @@ public:
 
     // Deletes the isosurface.
     void DeleteSurface();
-
-    // Returns the length, width, and height of the volume in which the
-    // isosurface in enclosed in.  Returns -1 if the surface is not
-    // valid.
-    int GetVolumeLengths(float& fVolLengthX, float& fVolLengthY, float& fVolLengthZ);
 
     // The number of vertices which make up the isosurface.
     unsigned int m_nVertices;
@@ -59,7 +54,7 @@ public:
     unsigned int m_nTriangles;
 
     // The indices of the vertices which make up the triangles.
-    unsigned int* m_piTriangleIndices;
+    QArray<std::array<unsigned int, 3> > m_piTriangleIndices;
 
     // The number of normals.
     unsigned int m_nNormals;
