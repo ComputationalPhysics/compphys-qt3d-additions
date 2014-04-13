@@ -25,7 +25,7 @@ IsoSurface::IsoSurface(QQuickItem *parent) :
     m_vertexBundleDirty(true),
     m_drawingMode(QGL::Triangles)
 {
-    int nPoints = 1024;
+    int nPoints = 256;
     double systemSize = 20;
     double cellSize = systemSize / (nPoints-1);
     double radius = 5;
@@ -65,23 +65,21 @@ void IsoSurface::generateFromScalarField(QArray<QArray<QArray<T> > > &scalarFiel
     reset();
 
     MarchingCubes<T> marchingCubes;
+    qDebug() << "Balle1";
     marchingCubes.GenerateSurface(scalarField, isoValue, gridUnitLength);
-
+    qDebug() << "Balle2";
     for(int triangle=0; triangle<marchingCubes.m_nTriangles; triangle++) {
         unsigned int p1_index = marchingCubes.m_piTriangleIndices[3*triangle+0];
         unsigned int p2_index = marchingCubes.m_piTriangleIndices[3*triangle+1];
         unsigned int p3_index = marchingCubes.m_piTriangleIndices[3*triangle+2];
 
-        QVector3D p1(marchingCubes.m_ppt3dVertices[p1_index][0], marchingCubes.m_ppt3dVertices[p1_index][1], marchingCubes.m_ppt3dVertices[p1_index][2]);
-        QVector3D p2(marchingCubes.m_ppt3dVertices[p2_index][0], marchingCubes.m_ppt3dVertices[p2_index][1], marchingCubes.m_ppt3dVertices[p2_index][2]);
-        QVector3D p3(marchingCubes.m_ppt3dVertices[p3_index][0], marchingCubes.m_ppt3dVertices[p3_index][1], marchingCubes.m_ppt3dVertices[p3_index][2]);
-        VECTOR3D &norm1 = marchingCubes.m_pvec3dNormals[p1_index];
-        VECTOR3D &norm2 = marchingCubes.m_pvec3dNormals[p2_index];
-        VECTOR3D &norm3 = marchingCubes.m_pvec3dNormals[p3_index];
+        QVector3D &p1 = marchingCubes.m_ppt3dVertices[p1_index];
+        QVector3D &p2 = marchingCubes.m_ppt3dVertices[p2_index];
+        QVector3D &p3 = marchingCubes.m_ppt3dVertices[p3_index];
 
-        QVector3D n1(norm1[0], norm1[1], norm1[2]);
-        QVector3D n2(norm2[0], norm2[1], norm2[2]);
-        QVector3D n3(norm3[0], norm3[1], norm3[2]);
+        QVector3D &n1 = marchingCubes.m_pvec3dNormals[p1_index];
+        QVector3D &n2 = marchingCubes.m_pvec3dNormals[p2_index];
+        QVector3D &n3 = marchingCubes.m_pvec3dNormals[p3_index];
 
         m_vertices.append(p1);
         m_vertices.append(p2);
@@ -90,6 +88,7 @@ void IsoSurface::generateFromScalarField(QArray<QArray<QArray<T> > > &scalarFiel
         m_normals.append(n2);
         m_normals.append(n3);
     }
+    qDebug() << "Balle3";
 
     m_vertexBundleDirty = true;
 }

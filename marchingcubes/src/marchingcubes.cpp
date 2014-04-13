@@ -1,8 +1,8 @@
 // File Name: marchingcubes.cpp
-// Last Modified: 5/8/2000
-// Author: Raghavendra Chandrashekara (based on source code provided
-// by Paul Bourke and Cory Gene Bloyd)
-// Email: rc99@doc.ic.ac.uk, rchandrashekara@hotmail.com
+// Last Modified: 2014-04-13
+// Author: Anders Hafreager (based on source code provided
+// by Raghavendra Chandrashekara)
+// Email: anderhaf@fys.uio.no
 //
 // Description: This is the implementation file for the MarchingCubes class.
 
@@ -316,9 +316,7 @@ template <class T> MarchingCubes<T>::MarchingCubes()
     m_nTriangles = 0;
     m_nNormals = 0;
     m_nVertices = 0;
-    m_ppt3dVertices = NULL;
     m_piTriangleIndices = NULL;
-    m_pvec3dNormals = NULL;
     m_isoValue = 0;
     m_bValidSurface = false;
 }
@@ -357,8 +355,7 @@ template <class T> void MarchingCubes<T>::GenerateSurface(const QArray<QArray<QA
                 if (scalarField[x+1][y+1][z+1] >= m_isoValue) tableIndex |= 64;
                 if (scalarField[x+1][y][z+1] >= m_isoValue) tableIndex |= 128;
 
-                // Now create a triangulation of the isosurface in this
-                // cell.
+                // Now create a triangulation of the isosurface in this cell.
                 if (m_edgeTable[tableIndex] != 0) {
                     if (m_edgeTable[tableIndex] & 8) {
                         POINT3DID pt = CalculateIntersection(x, y, z, 3, scalarField);
@@ -468,18 +465,13 @@ template <class T> void MarchingCubes<T>::DeleteSurface()
     m_nTriangles = 0;
     m_nNormals = 0;
     m_nVertices = 0;
-    if (m_ppt3dVertices != NULL) {
-        delete[] m_ppt3dVertices;
-        m_ppt3dVertices = NULL;
-    }
+    m_ppt3dVertices.clear();
+
     if (m_piTriangleIndices != NULL) {
         delete[] m_piTriangleIndices;
         m_piTriangleIndices = NULL;
     }
-    if (m_pvec3dNormals != NULL) {
-        delete[] m_pvec3dNormals;
-        m_pvec3dNormals = NULL;
-    }
+    m_pvec3dNormals.clear();
     m_isoValue = 0;
     m_bValidSurface = false;
 }
@@ -658,11 +650,11 @@ template <class T> void MarchingCubes<T>::RenameVerticesAndTriangles()
     // Copy vertices.
     mapIterator = m_i2pt3idVertices.begin();
     m_nVertices = m_i2pt3idVertices.size();
-    m_ppt3dVertices = new POINT3D[m_nVertices];
+    m_ppt3dVertices.resize(m_nVertices);
     for (unsigned int i = 0; i < m_nVertices; i++, mapIterator++) {
-        m_ppt3dVertices[i][0] = (*mapIterator).second.x;
-        m_ppt3dVertices[i][1] = (*mapIterator).second.y;
-        m_ppt3dVertices[i][2] = (*mapIterator).second.z;
+        m_ppt3dVertices[i].setX((*mapIterator).second.x);
+        m_ppt3dVertices[i].setY((*mapIterator).second.y);
+        m_ppt3dVertices[i].setZ((*mapIterator).second.z);
     }
     // Copy vertex indices which make triangles.
     vecIterator = m_trivecTriangles.begin();
@@ -681,63 +673,44 @@ template <class T> void MarchingCubes<T>::RenameVerticesAndTriangles()
 template <class T> void MarchingCubes<T>::CalculateNormals()
 {
     m_nNormals = m_nVertices;
-    m_pvec3dNormals = new VECTOR3D[m_nNormals];
+    m_pvec3dNormals.resize(m_nNormals);
 
     // Set all normals to 0.
     for (unsigned int i = 0; i < m_nNormals; i++) {
-        m_pvec3dNormals[i][0] = 0;
-        m_pvec3dNormals[i][1] = 0;
-        m_pvec3dNormals[i][2] = 0;
+        m_pvec3dNormals[i].setX(0);
+        m_pvec3dNormals[i].setY(0);
+        m_pvec3dNormals[i].setZ(0);
     }
 
     // Calculate normals.
     for (unsigned int i = 0; i < m_nTriangles; i++) {
-        VECTOR3D vec1, vec2;
+        QVector3D vec1, vec2;
+
         unsigned int id0, id1, id2;
         id0 = m_piTriangleIndices[i*3];
         id1 = m_piTriangleIndices[i*3+1];
         id2 = m_piTriangleIndices[i*3+2];
 
-        vec1[0] = m_ppt3dVertices[id1][0] - m_ppt3dVertices[id0][0];
-        vec1[1] = m_ppt3dVertices[id1][1] - m_ppt3dVertices[id0][1];
-        vec1[2] = m_ppt3dVertices[id1][2] - m_ppt3dVertices[id0][2];
-        vec2[0] = m_ppt3dVertices[id2][0] - m_ppt3dVertices[id0][0];
-        vec2[1] = m_ppt3dVertices[id2][1] - m_ppt3dVertices[id0][1];
-        vec2[2] = m_ppt3dVertices[id2][2] - m_ppt3dVertices[id0][2];
+        vec1.setX(m_ppt3dVertices[id1].x() - m_ppt3dVertices[id0].x());
+        vec1.setY(m_ppt3dVertices[id1].y() - m_ppt3dVertices[id0].y());
+        vec1.setZ(m_ppt3dVertices[id1].z() - m_ppt3dVertices[id0].z());
+        vec2.setX(m_ppt3dVertices[id2].x() - m_ppt3dVertices[id0].x());
+        vec2.setY(m_ppt3dVertices[id2].y() - m_ppt3dVertices[id0].y());
+        vec2.setZ(m_ppt3dVertices[id2].z() - m_ppt3dVertices[id0].z());
 
         QVector3D normal = QVector3D(vec1[2]*vec2[1] - vec1[1]*vec2[2], vec1[0]*vec2[2] - vec1[2]*vec2[0], vec1[1]*vec2[0] - vec1[0]*vec2[1]);
         normal.normalize();
 
-        QVector3D n1 = QVector3D(m_pvec3dNormals[id0][0], m_pvec3dNormals[id0][1], m_pvec3dNormals[id0][2]);
-        QVector3D n2 = QVector3D(m_pvec3dNormals[id1][0], m_pvec3dNormals[id1][1], m_pvec3dNormals[id1][2]);
-        QVector3D n3 = QVector3D(m_pvec3dNormals[id2][0], m_pvec3dNormals[id2][1], m_pvec3dNormals[id2][2]);
+        QVector3D n1 = m_pvec3dNormals[id0];
+        QVector3D n2 = m_pvec3dNormals[id1];
+        QVector3D n3 = m_pvec3dNormals[id2];
 
-        if(QVector3D::dotProduct(normal,n1) >= 0) {
-            m_pvec3dNormals[id0][0] = normal.x();
-            m_pvec3dNormals[id0][1] = normal.y();
-            m_pvec3dNormals[id0][2] = normal.z();
-        }
-
-        if(QVector3D::dotProduct(normal,n2) >= 0) {
-            m_pvec3dNormals[id1][0] = normal.x();
-            m_pvec3dNormals[id1][1] = normal.y();
-            m_pvec3dNormals[id1][2] = normal.z();
-        }
-
-        if(QVector3D::dotProduct(normal,n3) >= 0) {
-            m_pvec3dNormals[id2][0] = normal.x();
-            m_pvec3dNormals[id2][1] = normal.y();
-            m_pvec3dNormals[id2][2] = normal.z();
-        }
+        if(QVector3D::dotProduct(normal,n1) >= 0) m_pvec3dNormals[id0] += normal;
+        if(QVector3D::dotProduct(normal,n2) >= 0) m_pvec3dNormals[id1] += normal;
+        if(QVector3D::dotProduct(normal,n3) >= 0) m_pvec3dNormals[id2] += normal;
     }
 
-    // Normalize normals.
-    for (unsigned int i = 0; i < m_nNormals; i++) {
-        float length = sqrt(m_pvec3dNormals[i][0]*m_pvec3dNormals[i][0] + m_pvec3dNormals[i][1]*m_pvec3dNormals[i][1] + m_pvec3dNormals[i][2]*m_pvec3dNormals[i][2]);
-        m_pvec3dNormals[i][0] /= length;
-        m_pvec3dNormals[i][1] /= length;
-        m_pvec3dNormals[i][2] /= length;
-    }
+    for (unsigned int i = 0; i < m_nNormals; i++) m_pvec3dNormals[i].normalize();
 }
 
 template class MarchingCubes<short>;

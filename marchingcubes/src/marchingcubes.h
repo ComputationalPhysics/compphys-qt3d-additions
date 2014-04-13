@@ -2,10 +2,10 @@
 #define MARCHINGCUBES_H
 
 // File Name: marchingcubes.h
-// Last Modified: 5/8/2000
-// Author: Raghavendra Chandrashekara (basesd on source code
-// provided by Paul Bourke and Cory Gene Bloyd)
-// Email: rc99@doc.ic.ac.uk, rchandrashekara@hotmail.com
+// Last Modified: 2014-04-13
+// Author: Anders Hafreager (basesd on source code
+// provided by Raghavendra Chandrashekara)
+// Email: anderhaf@fys.uio.no
 //
 // Description: This is the interface file for the MarchingCubes class.
 // MarchingCubes can be used to construct an isosurface from a scalar
@@ -15,9 +15,6 @@
 #include <vector>
 #include <QArray>
 #include <QVector3D>
-
-typedef float POINT3D[3];
-typedef float VECTOR3D[3];
 
 struct POINT3DID {
     unsigned int newID;
@@ -56,7 +53,7 @@ public:
     unsigned int m_nVertices;
 
     // The vertices which make up the isosurface.
-    POINT3D* m_ppt3dVertices;
+    QArray<QVector3D> m_ppt3dVertices;
 
     // The number of triangles which make up the isosurface.
     unsigned int m_nTriangles;
@@ -68,7 +65,7 @@ public:
     unsigned int m_nNormals;
 
     // The normals.
-    VECTOR3D* m_pvec3dNormals;
+    QArray<QVector3D> m_pvec3dNormals;
 
     // List of POINT3Ds which form the isosurface.
     ID2POINT3DID m_i2pt3idVertices;
