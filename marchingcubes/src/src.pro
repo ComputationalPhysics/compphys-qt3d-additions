@@ -14,11 +14,13 @@ HEADERS_OUT_DIR = $$OUT_PWD/include/compphys/marchingcubes
 
 SOURCES += \
     marchingcubesmodule.cpp \
-    isosurface.cpp
+    isosurface.cpp \
+    marchingcubes.cpp
 
 HEADERS += \
     marchingcubesmodule.h \
-    isosurface.h
+    isosurface.h \
+    marchingcubes.h
 
 !equals(_PRO_FILE_PWD_, $$OUT_PWD) {
     copy_qmldir.target = $$OUT_PWD/qmldir

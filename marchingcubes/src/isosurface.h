@@ -16,7 +16,11 @@ public:
 
     const QGLVertexBundle vertexBundle();
     void generateVertexBundle();
+    template<typename T>
+    void generateFromScalarField(QArray<QArray<QArray<T> > > &scalarField, T isoValue, QVector3D gridUnitLength);
 private:
+    void reset();
+
     QArray<QVector3D> m_vertices;
     QArray<QVector3D> m_normals;
     QGL::DrawingMode m_drawingMode;
