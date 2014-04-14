@@ -682,7 +682,7 @@ template <class T> void MarchingCubes<T>::CalculateNormals()
         vec2.setY(m_ppt3dVertices[id2].y() - m_ppt3dVertices[id0].y());
         vec2.setZ(m_ppt3dVertices[id2].z() - m_ppt3dVertices[id0].z());
 
-        QVector3D normal = QVector3D(vec1[2]*vec2[1] - vec1[1]*vec2[2], vec1[0]*vec2[2] - vec1[2]*vec2[0], vec1[1]*vec2[0] - vec1[0]*vec2[1]);
+        QVector3D normal(vec1.z()*vec2.y() - vec1.y()*vec2.z(), vec1.x()*vec2.z() - vec1.z()*vec2.x(), vec1.y()*vec2.x() - vec1.x()*vec2.y());
         normal.normalize();
 
         QVector3D n1 = m_pvec3dNormals[id0];

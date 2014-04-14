@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     f.setMajorVersion(4);
     f.setMinorVersion(1);
 //    f.setProfile(QSurfaceFormat::CoreProfile);
-//    f.setProfile(QSurfaceFormat::CompatibilityProfile);
+    f.setProfile(QSurfaceFormat::CompatibilityProfile);
     QtQuick2ApplicationViewer view;
     // Specific to demo, not necessary after install
     view.addImportPath(".");

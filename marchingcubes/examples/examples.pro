@@ -1,5 +1,6 @@
 TEMPLATE=app
 QT += qml quick 3dquick
+CONFIG+=c++11
 
 # Add more folders to ship with the application, here
 folder_01.source = qml/marchingcubes
@@ -27,7 +28,8 @@ target.path = $$[QT_INSTALL_EXAMPLES]/compphys
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
-OTHER_FILES += README.md
+OTHER_FILES += README.md \
+    qml/marchingcubes/main.qml
 
 # The following is only necessary for the example deployment
 # I.e. there is no need to do the same for other apps

@@ -19,7 +19,7 @@ void CustomEffect::setUseGeometryShader(bool value)
 }
 
 bool CustomEffect::beforeLink() {
-    QByteArray vertexCode = "#version 330\n"
+    QByteArray vertexCode = "#version 120\n"
             "uniform mat4 qt_ModelViewProjectionMatrix;\n"
             "uniform mat4 qt_ModelViewMatrix;\n"
             "in vec4 qt_Vertex;\n"
@@ -50,7 +50,7 @@ bool CustomEffect::beforeLink() {
                          )
                    :
                      QByteArray(
-                         "#version 330\n"
+                         "#version 120\n"
                          )
                      )+
                 "layout( points ) in;\n"
@@ -113,7 +113,7 @@ bool CustomEffect::beforeLink() {
         }
     }
 
-    QByteArray fragmentCode = "#version 330\n"
+    QByteArray fragmentCode = "#version 120\n"
             "uniform vec4 color;\n"
             "uniform sampler2D qt_Texture0;\n"
             "in float lightIntensity;\n"

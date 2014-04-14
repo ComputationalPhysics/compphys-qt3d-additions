@@ -3,6 +3,7 @@ TARGET=MultiBillboard
 QT += qml quick 3dquick
 
 CONFIG += qt plugin
+CONFIG+=c++11
 
 #TARGET = $$qtLibraryTarget($$TARGET)
 uri = CompPhys.MultiBillboard
