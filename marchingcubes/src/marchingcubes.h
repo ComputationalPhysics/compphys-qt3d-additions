@@ -36,7 +36,7 @@ public:
     ~MarchingCubes();
 
     // Generates the isosurface from the scalar field contained in scalarField array
-    void GenerateSurface(const QArray<QArray<QArray<T> > > &scalarField, T isoValue, QVector3D gridUnitLength);
+    void GenerateSurface(const QArray<QArray<QArray<T> > > *scalarField, T isoValue, QVector3D gridUnitLength);
 
     // Returns true if a valid surface has been generated.
     bool IsSurfaceValid();

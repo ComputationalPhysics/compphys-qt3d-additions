@@ -17,22 +17,22 @@ public:
     DataSource(QObject *parent = 0);
 
     virtual const QArray<QArray<QArray<float> > > *scalarField() {
-        cerr << "Returning from abstract DataSource."
+        cerr << "Returning from abstract DataSource.scalarField()."
                 "This should not happen." << endl;
         return 0;
     }
     virtual float isoValue() {
-        cerr << "Returning from abstract DataSource."
+        cerr << "Returning from abstract DataSource.isoValue()"
                 "This should not happen." << endl;
         return 0;
     }
 
-    virtual QVector3D getGridUnitLength() {
-        cerr << "Returning from abstract DataSource."
+    virtual QVector3D gridUnitLength() {
+        cerr << "Returning from abstract DataSource.gridUnitLength()"
                 "This should not happen." << endl;
         return emptyQVector3D;
     }
-//    virtual void setGridUnitLength(const QVector3D &value) = 0;
+
 };
 
 #endif // DATASOURCE_H

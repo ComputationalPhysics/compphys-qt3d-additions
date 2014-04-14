@@ -10,40 +10,40 @@
 
 class IsoSurface : public QQuickItem3D {
     Q_OBJECT
-    // Q_PROPERTY(DataSource *dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
+    Q_PROPERTY(DataSource *dataSource READ dataSource WRITE setDataSource NOTIFY dataSourceChanged)
 
 public:
     IsoSurface(QQuickItem *parent = 0);
-    // virtual ~IsoSurface();
+    virtual ~IsoSurface();
 
-//    QGL::DrawingMode drawingMode() const;
-//    void setDrawingMode(const QGL::DrawingMode &drawingMode);
+    QGL::DrawingMode drawingMode() const;
+    void setDrawingMode(const QGL::DrawingMode &drawingMode);
 
-//    const QGLVertexBundle vertexBundle();
-//    void generateVertexBundle();
+    const QGLVertexBundle vertexBundle();
+    void generateVertexBundle();
 
-//    DataSource * dataSource() const
-//    {
-//        return m_dataSource;
-//    }
+    DataSource * dataSource() const
+    {
+        return m_dataSource;
+    }
 
 public slots:
-//    void setDataSource(DataSource * arg)
-//    {
-//        if (m_dataSource != arg) {
-//            qDebug() << "I got thems datasource";
-//            m_dataSource = arg;
-//            generate();
-//            emit dataSourceChanged(arg);
-//        }
-//    }
+    void setDataSource(DataSource * arg)
+    {
+        if (m_dataSource != arg) {
+            qDebug() << "I got thems datasource";
+            m_dataSource = arg;
+            generate();
+            emit dataSourceChanged(arg);
+        }
+    }
 
 signals:
-    // void dataSourceChanged(DataSource * arg);
+    void dataSourceChanged(DataSource * arg);
 
 private:
-    //void reset();
-    //void generate();
+    void reset();
+    void generate();
 
     QArray<QVector3D> m_vertices;
     QArray<QVector3D> m_normals;
@@ -55,7 +55,7 @@ private:
     DataSource * m_dataSource;
 
 protected:
-    // void drawItem(QGLPainter *painter);
+    virtual void drawItem(QGLPainter *painter);
 };
 
 #endif // ISOSURFACE_H

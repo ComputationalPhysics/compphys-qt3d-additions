@@ -325,9 +325,10 @@ template <class T> MarchingCubes<T>::~MarchingCubes()
     DeleteSurface();
 }
 
-template <class T> void MarchingCubes<T>::GenerateSurface(const QArray<QArray<QArray<T> > > &scalarField, T isoValue, QVector3D gridUnitLength)
+template <class T> void MarchingCubes<T>::GenerateSurface(const QArray<QArray<QArray<T> > > *scalarFieldPointer, T isoValue, QVector3D gridUnitLength)
 {
     if (m_bValidSurface) DeleteSurface();
+    const QArray<QArray<QArray<T> > > &scalarField = *scalarFieldPointer;
 
     m_isoValue = isoValue;
     m_nCellsX = scalarField.size() - 1;
@@ -682,7 +683,7 @@ template <class T> void MarchingCubes<T>::CalculateNormals()
         vec2.setY(m_ppt3dVertices[id2].y() - m_ppt3dVertices[id0].y());
         vec2.setZ(m_ppt3dVertices[id2].z() - m_ppt3dVertices[id0].z());
 
-        QVector3D normal = QVector3D(vec1[2]*vec2[1] - vec1[1]*vec2[2], vec1[0]*vec2[2] - vec1[2]*vec2[0], vec1[1]*vec2[0] - vec1[0]*vec2[1]);
+        QVector3D normal = QVector3D(vec1.z()*vec2.y() - vec1.y()*vec2.z(), vec1.x()*vec2.z() - vec1.z()*vec2.x(), vec1.y()*vec2.x() - vec1.x()*vec2.y());
         normal.normalize();
 
         QVector3D n1 = m_pvec3dNormals[id0];
