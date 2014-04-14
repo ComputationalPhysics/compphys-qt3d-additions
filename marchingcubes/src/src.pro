@@ -15,12 +15,14 @@ HEADERS_OUT_DIR = $$OUT_PWD/include/compphys/marchingcubes
 SOURCES += \
     marchingcubesmodule.cpp \
     isosurface.cpp \
-    marchingcubes.cpp
+    marchingcubes.cpp \
+    datasource.cpp
 
 HEADERS += \
     marchingcubesmodule.h \
     isosurface.h \
-    marchingcubes.h
+    marchingcubes.h \
+    datasource.h
 
 !equals(_PRO_FILE_PWD_, $$OUT_PWD) {
     copy_qmldir.target = $$OUT_PWD/qmldir
@@ -47,7 +49,7 @@ unix {
 
 # Copy the necessary headers as well
 !equals(_PRO_FILE_PWD_, $$OUT_PWD) {
-    copyheaders.commands = $$QMAKE_MKDIR $$HEADERS_OUT_DIR && $(COPY_DIR) $$PWD/isosurface.h $$HEADERS_OUT_DIR
+    copyheaders.commands = $$QMAKE_MKDIR $$HEADERS_OUT_DIR && $(COPY_DIR) $$PWD/isosurface.h $$PWD/datasource.h $$HEADERS_OUT_DIR
     first.depends = $(first) copyheaders
     export(first.depends)
     export(copyheaders.commands)
@@ -55,7 +57,7 @@ unix {
 }
 
 # Set up installation of headers
-target_headers.files = isosurface.h
+target_headers.files = isosurface.h datasource.h
 unix {
     headersInstallPath = $$[QT_INSTALL_HEADERS]/compphys/marchingcubes
     target_headers.path = $$headersInstallPath
@@ -63,7 +65,6 @@ unix {
 }
 
 OTHER_FILES += README.md \
-    qmldir \
     qmldir
 
 QMAKE_CXXFLAGS += -std=c++0x

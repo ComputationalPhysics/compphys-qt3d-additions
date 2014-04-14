@@ -3,7 +3,8 @@
 
 #include <QQmlExtensionPlugin>
 #include <QtQml>
-#include <isosurface.h>
+#include "isosurface.h"
+#include "datasource.h"
 
 class MarchingCubesModule : public QQmlExtensionPlugin
 {
@@ -14,6 +15,7 @@ public:
         Q_UNUSED(uri)
         Q_ASSERT(QLatin1String(uri) == QLatin1String("CompPhys.MarchingCubes"));
         qmlRegisterType<IsoSurface>("CompPhys.MarchingCubes", 1, 0, "IsoSurface");
+        qmlRegisterType<DataSource>("CompPhys.MarchingCubes", 1, 0, "DataSource");
     }
     void initializeEngine(QQmlEngine*, const char*) {
 

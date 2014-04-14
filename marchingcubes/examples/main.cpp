@@ -1,5 +1,5 @@
 #include <qmlres.h>
-
+#include <exampledatasource.h>
 #include <QtCore/qdir.h>
 #include <QtQuick>
 
@@ -15,6 +15,7 @@
 
 int main(int argc, char *argv[])
 {
+    qmlRegisterType<ExampleDataSource>("CompPhys.MarchingCubesDemo", 1, 0, "ExampleDataSource");
     qmlRegisterType<FrameRateCounter>("CompPhys.MarchingCubesDemo", 1, 0, "FrameRateCounter");
     QGuiApplication app(argc, argv);
 
