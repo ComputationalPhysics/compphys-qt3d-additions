@@ -346,14 +346,14 @@ template <class T> void MarchingCubes<T>::GenerateSurface(const QArray<QArray<QA
                 // vertices which are below the isolevel.
                 unsigned int tableIndex = 0;
 
-                if (scalarField[x][y][z] >= m_isoValue) tableIndex |= 1;
-                if (scalarField[x][y+1][z] >= m_isoValue) tableIndex |= 2;
-                if (scalarField[x+1][y+1][z] >= m_isoValue) tableIndex |= 4;
-                if (scalarField[x+1][y][z] >= m_isoValue) tableIndex |= 8;
-                if (scalarField[x][y][z+1] >= m_isoValue) tableIndex |= 16;
-                if (scalarField[x][y+1][z+1] >= m_isoValue) tableIndex |= 32;
-                if (scalarField[x+1][y+1][z+1] >= m_isoValue) tableIndex |= 64;
-                if (scalarField[x+1][y][z+1] >= m_isoValue) tableIndex |= 128;
+                if (scalarField[x][y][z] <= m_isoValue) tableIndex |= 1;
+                if (scalarField[x][y+1][z] <= m_isoValue) tableIndex |= 2;
+                if (scalarField[x+1][y+1][z] <= m_isoValue) tableIndex |= 4;
+                if (scalarField[x+1][y][z] <= m_isoValue) tableIndex |= 8;
+                if (scalarField[x][y][z+1] <= m_isoValue) tableIndex |= 16;
+                if (scalarField[x][y+1][z+1] <= m_isoValue) tableIndex |= 32;
+                if (scalarField[x+1][y+1][z+1] <= m_isoValue) tableIndex |= 64;
+                if (scalarField[x+1][y][z+1] <= m_isoValue) tableIndex |= 128;
 
                 // Now create a triangulation of the isosurface in this cell.
                 if (m_edgeTable[tableIndex] != 0) {

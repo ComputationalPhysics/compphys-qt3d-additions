@@ -14,10 +14,12 @@ DEPLOYMENTFOLDERS = folder_01
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     frameratecounter.cpp \
-    exampledatasource.cpp
+    exampledatasource.cpp \
+    perlinnoise.cpp
 
 HEADERS += frameratecounter.h \
-    exampledatasource.h
+    exampledatasource.h \
+    perlinnoise.h
 
 TARGET = marchingcubes_demo
 

@@ -47,7 +47,7 @@ void IsoSurface::generate() {
 
     MarchingCubes<float> marchingCubes;
     marchingCubes.GenerateSurface(m_dataSource->scalarField(), m_dataSource->isoValue(), m_dataSource->gridUnitLength());
-
+    qDebug() << "Marching cubes generated " << marchingCubes.m_nTriangles << " triangles.";
     for(int triangle=0; triangle<marchingCubes.m_nTriangles; triangle++) {
         unsigned int p1_index = marchingCubes.m_piTriangleIndices[triangle][0];
         unsigned int p2_index = marchingCubes.m_piTriangleIndices[triangle][1];
