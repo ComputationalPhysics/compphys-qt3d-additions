@@ -73,18 +73,15 @@ void IsoSurface::generate() {
 }
 
 void IsoSurface::drawItem(QGLPainter *painter) {
-    qDebug() << "Will render";
     painter->clearAttributes();
 
     // Set the rest of the vertex bundle (basically only positions)
     painter->setVertexBundle(vertexBundle());
     painter->draw(QGL::DrawingMode(m_drawingMode), m_vertexBundle.vertexCount());
-    qDebug() << "Did render";
 }
 
 IsoSurface::~IsoSurface()
 {
     m_vertices.clear();
     m_normals.clear();
-    if(m_dataSource) delete m_dataSource;
 }
